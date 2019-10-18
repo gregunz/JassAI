@@ -32,7 +32,7 @@ class Rank(IntEnum):
         }.get(self.value, str(self.value))
 
 
-default_points = {
+default_points = {  # points of non-atout cards
     Rank.ace: 11,
     Rank.king: 4,
     Rank.queen: 3,
@@ -40,7 +40,7 @@ default_points = {
     Rank.ten: 10,
 }
 
-atout_points = {
+atout_points = {  # points of an atout cards
     Rank.ace: 11,
     Rank.king: 4,
     Rank.queen: 3,
@@ -49,9 +49,18 @@ atout_points = {
     Rank.nine: 14,
 }
 
+atout_rank_order = {  # left is power order, right is value order
+    Rank.jack: Rank.ace,
+    Rank.nine: Rank.king,
+    Rank.ace: Rank.queen,
+    Rank.king: Rank.jack,
+    Rank.queen: Rank.ten,
+    Rank.ten: Rank.nine,
+}
+
 
 class Card:
-    def __init__(self, rank: Union[int, Rank], suit: Union[int, Suit]):
+    def __init__(self, rank: Union[int, Rank], suit: Union[str, Suit]):
         self.rank: Rank = Rank(rank)
         self.suit: Suit = Suit(suit)
 
@@ -66,15 +75,18 @@ class Card:
 
     def value(self, served: Suit, atout: Suit):
         if self.suit is atout:
-            return self.rank - Rank.six + Rank.ace - Rank.six + 1
+            return (Rank.ace - Rank.six + 1) + atout_rank_order.get(self.rank, self.rank.value) - Rank.six
         if self.suit is served:
             return self.rank - Rank.six
         return 0
 
-    def is_greater(self, other: 'Card', served: Suit, atout: Suit):
-        return self.value(served, atout) > other.value(served, atout)
+    def beats(self, other: 'Card', served: Suit, atout: Suit):
+        return self.value(served=served, atout=atout) >= other.value(served=served, atout=atout)
 
+    def __eq__(self, other):
+        return isinstance(other, Card) \
+               and other.rank == self.rank \
+               and other.suit == self.suit
 
-class Deck:
-    def __init__(self):
-        self.cards = [Card(rank, suit) for rank in list(Rank) for suit in list(Suit)]
+    def __hash__(self):
+        return hash((self.rank, self.suit))
