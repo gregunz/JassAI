@@ -61,14 +61,33 @@ class CardTest(TestCase):
                                 msg=f'{card1} should beat {card2} (atout={atout}, served={served})')
             if card1.suit is atout and card2.suit is atout:
                 if card1.rank is Rank.jack:
-                    self.assertTrue(card1.beats(card2, served=served, atout=atout))
+                    self.assertTrue(card1.beats(card2, served=served, atout=atout),
+                                    msg=f'{card1} should beat {card2} (atout={atout}, served={served})')
                 elif card1.rank is Rank.nine and card2.rank is not Rank.jack:
-                    self.assertTrue(card1.beats(card2, served=served, atout=atout))
+                    self.assertTrue(card1.beats(card2, served=served, atout=atout),
+                                    msg=f'{card1} should beat {card2} (atout={atout}, served={served})')
                 elif card2.rank is not Rank.jack and card2.rank is not Rank.nine and card1.rank >= card2.rank:
-                    self.assertTrue(card1.beats(card2, served=served, atout=atout))
+                    self.assertTrue(card1.beats(card2, served=served, atout=atout),
+                                    msg=f'{card1} should beat {card2} (atout={atout}, served={served})')
 
         for _ in range(1000):
             card1 = Card(self.random_rank(), self.random_suit())
             card2 = Card(self.random_rank(), self.random_suit())
             checks(card1, card2, atout=self.random_suit(), served=self.random_suit())
             checks(card2, card1, atout=self.random_suit(), served=self.random_suit())
+
+    def test_sorted(self):
+        cards = sorted(
+            [Card(self.random_rank(), self.random_suit()) for _ in range(1000)],
+            key=lambda x: x.order_value()
+        )[::-1]
+        atout = Suit.clubs
+        served = Suit.hearts
+
+        def is_not_special(card):
+            return not (card.suit is atout and (card.rank is Rank.jack or card.rank is Rank.nine))
+
+        for card1, card2 in zip(cards[:-1], cards[1:]):
+            if is_not_special(card1) and is_not_special(card2):
+                self.assertTrue(card1.beats(card2, served=served, atout=atout),
+                                msg=f'{card1} should beat {card2} (atout={atout}, served={served})')

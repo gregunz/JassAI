@@ -8,6 +8,14 @@ class Suit(Enum):
     hearts = '♡'
     clubs = '♣'
 
+    def order_value(self):
+        return {
+                   Suit.diamonds: 0,
+                   Suit.spades: 1,
+                   Suit.hearts: 2,
+                   Suit.clubs: 3,
+               }[self] * 10  # use 10 instead of 9 such that ace and 6 are separated
+
     def __repr__(self):
         return self.value
 
@@ -23,40 +31,26 @@ class Rank(IntEnum):
     king = 13
     ace = 14
 
+    def order_value(self):
+        return self.value - self.six + 1
+
+    def atout_order_value(self):
+        return {  # left is power order, right is value order
+            Rank.jack: Rank.ace,
+            Rank.nine: Rank.king,
+            Rank.ace: Rank.queen,
+            Rank.king: Rank.jack,
+            Rank.queen: Rank.ten,
+            Rank.ten: Rank.nine,
+        }.get(self, self).order_value()
+
     def __repr__(self):
         return {
-            self.jack: 'J',
-            self.queen: 'Q',
-            self.king: 'K',
-            self.ace: 'A',
-        }.get(self.value, str(self.value))
-
-
-default_points = {  # points of non-atout cards
-    Rank.ace: 11,
-    Rank.king: 4,
-    Rank.queen: 3,
-    Rank.jack: 2,
-    Rank.ten: 10,
-}
-
-atout_points = {  # points of an atout cards
-    Rank.ace: 11,
-    Rank.king: 4,
-    Rank.queen: 3,
-    Rank.jack: 20,
-    Rank.ten: 10,
-    Rank.nine: 14,
-}
-
-atout_rank_order = {  # left is power order, right is value order
-    Rank.jack: Rank.ace,
-    Rank.nine: Rank.king,
-    Rank.ace: Rank.queen,
-    Rank.king: Rank.jack,
-    Rank.queen: Rank.ten,
-    Rank.ten: Rank.nine,
-}
+            Rank.jack: 'J',
+            Rank.queen: 'Q',
+            Rank.king: 'K',
+            Rank.ace: 'A',
+        }.get(self, str(self.value))
 
 
 class Card:
@@ -64,29 +58,39 @@ class Card:
         self.rank: Rank = Rank(rank)
         self.suit: Suit = Suit(suit)
 
-    def __repr__(self):
-        return repr(self.rank) + repr(self.suit)
+    def order_value(self):
+        return self.rank.order_value() + self.suit.order_value()
 
-    def points(self, atout: Suit) -> int:
-        points = default_points
+    def game_value(self, served: Suit, atout: Suit):
         if self.suit is atout:
-            points = atout_points
-        return points.get(self.rank, 0)
-
-    def value(self, served: Suit, atout: Suit):
-        if self.suit is atout:
-            return (Rank.ace - Rank.six + 1) + atout_rank_order.get(self.rank, self.rank.value) - Rank.six
+            return self.rank.atout_order_value() + Rank.ace.order_value()
         if self.suit is served:
-            return self.rank - Rank.six
+            return self.rank.order_value()
         return 0
 
     def beats(self, other: 'Card', served: Suit, atout: Suit):
-        return self.value(served=served, atout=atout) >= other.value(served=served, atout=atout)
+        return self.game_value(served=served, atout=atout) >= other.game_value(served=served, atout=atout)
 
-    def __eq__(self, other):
-        return isinstance(other, Card) \
-               and other.rank == self.rank \
-               and other.suit == self.suit
+    def points(self, atout: Suit) -> int:
+        points = {  # points of non-atout cards
+            Rank.ace: 11,
+            Rank.king: 4,
+            Rank.queen: 3,
+            Rank.jack: 2,
+            Rank.ten: 10,
+        }
+        if self.suit is atout:
+            points.update({
+                Rank.jack: 20,
+                Rank.nine: 14,
+            })
+        return points.get(self.rank, 0)
+
+    def __repr__(self):
+        return repr(self.rank) + repr(self.suit)
+
+    def __eq__(self, other: 'Card'):
+        return self.order_value() == other.order_value()
 
     def __hash__(self):
         return hash((self.rank, self.suit))

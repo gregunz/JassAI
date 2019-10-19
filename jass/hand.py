@@ -7,7 +7,7 @@ class Hand:
     def __init__(self, cards: Sequence[Card]):
         self.__cards = set(cards)
         if len(cards) != 9:
-            raise ValueError('A hand must contains 9 unique cards at the start')
+            raise ValueError('A hand must contains exactly 9 unique cards at the start')
 
     @property
     def cards(self) -> List[Card]:
