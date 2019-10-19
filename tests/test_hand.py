@@ -2,6 +2,7 @@ from copy import deepcopy
 from random import randint
 from unittest import TestCase
 
+from jass.card import Card, Suit, Rank
 from jass.deck import Deck
 from jass.hand import Hand
 
@@ -32,3 +33,20 @@ class DeckTest(TestCase):
             self.assertIsInstance(hand, Hand)
             n_cards += len(hand.cards)
         self.assertEqual(n_cards, 36)
+
+    def test_annonce(self):
+        hand20 = Hand([
+            Card(6, Suit.hearts),
+            Card(8, Suit.hearts),
+            Card(9, Suit.hearts),
+            Card(10, Suit.hearts),
+            Card(Rank.ace, Suit.hearts),
+            Card(Rank.ace, Suit.clubs),
+            Card(Rank.ace, Suit.diamonds),
+            Card(Rank.king, Suit.diamonds),
+            Card(Rank.queen, Suit.hearts),
+        ])
+        annonces = hand20.annonces()
+        annonce =
+        self.assertEqual(annonce, 20)
+        self.assertEqual(rank, 10)
