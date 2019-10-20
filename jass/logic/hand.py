@@ -1,7 +1,7 @@
 from typing import Sequence, List, Dict
 
 from jass.logic.card import Card, Suit, Rank
-from jass.logic.illegal_move import IllegalMoveError
+from jass.logic.exceptions import IllegalMoveError
 
 
 class Hand:
