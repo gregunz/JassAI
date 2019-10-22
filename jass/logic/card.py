@@ -22,6 +22,9 @@ class Suit(Enum):
     def __repr__(self):
         return str(self.value)
 
+    def __str__(self):
+        return self.__repr__()
+
 
 class Rank(IntEnum):
     six = 6
@@ -56,6 +59,9 @@ class Rank(IntEnum):
             Rank.king: 'K',
             Rank.ace: 'A',
         }.get(self, str(self.value))
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class Card:
@@ -142,3 +148,6 @@ class Card:
 
     def __hash__(self) -> int:
         return hash((self.rank, self.suit))
+
+    def __str__(self):
+        return self.__repr__()

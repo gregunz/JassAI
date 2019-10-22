@@ -12,3 +12,6 @@ class Agent(metaclass=ABCMeta):
     @abstractmethod
     def choose_trump(self, state: ChooseTrumpState) -> ChooseTrumpAction:
         raise NotImplementedError
+
+    def __repr__(self):
+        return self.__class__.__name__
