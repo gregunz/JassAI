@@ -21,17 +21,23 @@ class HumanAgent(Agent):
                         )
             except ValueError:
                 pass
-            print('Invalid input or illegal card, starting over...')
+            print('Invalid input...')
 
     def choose_trump(self, state: ChooseTrumpState) -> ChooseTrumpAction:
         print(state.hand)
-        print('Choose trump suit...')
+        s = ''
+        if state.can_chibre:
+            s = ' or "chibre"...'
+        print('Choose trump suit... {d, s, h, c}' + s)
 
         while True:
             try:
-                return ChooseTrumpAction(
-                    suit=Card(Rank.six, input()).__suit,  # small hack to parse string properly
-                )
+                inputs = input()
+                if state.can_chibre and inputs == 'chibre':
+                    suit = None
+                else:
+                    suit = Card(Rank.six, inputs).suit  # small hack to parse string properly
+                return ChooseTrumpAction(suit=suit)
             except ValueError:
-                print('Invalid trump suit...')
+                print('Invalid input...')
                 pass

@@ -80,13 +80,20 @@ class Game:
                             self.__log_fn(f'{p} has the {Card(7, Suit.diamonds)}!')
                             break
 
-                next_trick_starter: Player = trump_chooser
-                trump = trump_chooser.choose_trump()
-                self.__log_fn(f'{trump_chooser} choose trump suit = {trump}')
+                trump = trump_chooser.choose_trump(can_chibre=True)
+                if trump is None:  # chibre!
+                    self.__log_fn(f'{trump_chooser} chibre!')
+                    partner = self.__parter_of(trump_chooser)
+                    trump = partner.choose_trump(can_chibre=False)
+                    self.__log_fn(f'{partner} choose trump suit = {trump}')
+                else:
+                    self.__log_fn(f'{trump_chooser} choose trump suit = {trump}')
 
                 #####################
                 # PLAY THE 9 TRICKS #
                 #####################
+
+                next_trick_starter: Player = trump_chooser
 
                 round: List[Trick] = []
                 for trick_idx in range(9):
@@ -149,6 +156,9 @@ class Game:
 
     def __next_player(self, player) -> Player:
         return self.__players_order_from(player)[1]
+
+    def __parter_of(self, player: Player) -> Player:
+        return self.__players_order_from(player)[2]
 
     def __log_score(self):
         for team in self.__teams:

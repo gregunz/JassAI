@@ -7,8 +7,5 @@ class PlayCardAction:
 
 
 class ChooseTrumpAction:
-    def __init__(self, suit: Suit = None, chibre: bool = False):
-        assert (suit is None and chibre) or \
-               (suit is not None and not chibre)
+    def __init__(self, suit: Suit = None):
         self.suit = suit
-        self.chibre: bool = chibre

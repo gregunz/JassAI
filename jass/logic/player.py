@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from jass.agents.agent import Agent
 from jass.agents.state import PlayCardState, ChooseTrumpState
@@ -35,10 +35,10 @@ class Player:
         self.__hand.play(card, cards_played=cards_on_table, trump=trump)
         return card
 
-    def choose_trump(self) -> Suit:
+    def choose_trump(self, can_chibre) -> Optional[Suit]:
         if self.__hand is None:
             raise IllegalMoveError('Cannot choose trump before having cards')
-        state = ChooseTrumpState(self.__hand, can_chibre=False)  # todo: allow chibre
+        state = ChooseTrumpState(self.__hand, can_chibre=can_chibre)  # todo: allow chibre
         return self.__agent.choose_trump(state).suit
 
     def reward(self, value: int) -> None:

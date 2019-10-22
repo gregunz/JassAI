@@ -13,6 +13,8 @@ class RandomAgent(Agent):
         )
 
     def choose_trump(self, state: ChooseTrumpState) -> ChooseTrumpAction:
-        return ChooseTrumpAction(
-            suit=random.choice(list(Suit)),
-        )
+        choices = list(Suit)
+        if state.can_chibre:
+            choices += [None]
+        suit = random.choice(choices)
+        return ChooseTrumpAction(suit=suit)
