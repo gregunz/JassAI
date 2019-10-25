@@ -6,9 +6,9 @@ from jass.logic.card import Card, Rank
 
 class HumanAgent(Agent):
     def play_card(self, state: PlayCardState) -> PlayCardAction:
-        print(f'My hand: {sorted(state.hand_cards)}')
-        print(f'Cards playable: {sorted(state.playable_cards)}')
-        print('Choose a card to play (e.g. 7d = 7♢)....')
+        print(f'My hand [{" ".join([str(c) for c in sorted(state.hand_cards)])}]')
+        # print(f'Cards playable [{" ".join([str(c) for c in sorted(state.playable_cards)])}]')
+        print('Choose a card to play (e.g. 7d = 7♢)...')
 
         while True:
             try:
@@ -19,6 +19,9 @@ class HumanAgent(Agent):
                         return PlayCardAction(
                             card_to_play=card_to_play
                         )
+                    else:
+                        print('Do you know the rules bro?')
+                        continue
             except ValueError:
                 pass
             print('Invalid input...')
@@ -27,8 +30,8 @@ class HumanAgent(Agent):
         print(state.hand)
         s = ''
         if state.can_chibre:
-            s = ' or "chibre"...'
-        print('Choose trump suit... {d, s, h, c}' + s)
+            s = ' or chibre'
+        print(f'Choose trump suit... (d, s, h, c{s})')
 
         while True:
             try:

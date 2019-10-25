@@ -5,4 +5,4 @@ if __name__ == '__main__':
     random_agents = [RandomAgent() for _ in range(4)]
     names = ['Jean', 'Anne', 'Luc', 'Sophie']
 
-    Game(names, random_agents).start()
+    Game(names, random_agents, log_fn=print).play()

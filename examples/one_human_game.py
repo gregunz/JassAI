@@ -3,7 +3,7 @@ from jass.agents.random_agent import RandomAgent
 from jass.logic.game import Game
 
 if __name__ == '__main__':
-    humans = [HumanAgent()] + [RandomAgent() for _ in range(3)]
+    agents = [HumanAgent()] + [RandomAgent() for _ in range(3)]
     names = ['Jean', 'Anne', 'Luc', 'Sophie']
 
-    Game(names, humans).start()
+    Game(names, agents, log_fn=print).play()
