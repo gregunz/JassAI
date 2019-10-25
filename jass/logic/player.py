@@ -16,7 +16,7 @@ class Player:
     def give(self, hand: Hand) -> None:
         self.__hand = hand
 
-    def play(self, trump: Suit, players: List['Player'], trick_cards: Dict['Player', Card],
+    def play(self, trump: Suit, trump_chooser: 'Player', players: List['Player'], trick_cards: Dict['Player', Card],
              round_tricks: List[Dict['Player', Card]]) -> Card:
         assert self.__hand is not None
         assert self == players[0]
@@ -26,6 +26,7 @@ class Player:
 
         state = PlayCardState(
             trick_trump=trump,
+            trump_chooser_idx=players.index(trump_chooser),
             player_hand=self.__hand.cards,
             playable_cards=cards_playable,
             trick_history=cards_on_table,
@@ -38,7 +39,7 @@ class Player:
     def choose_trump(self, can_chibre) -> Optional[Suit]:
         if self.__hand is None:
             raise IllegalMoveError('Cannot choose trump before having cards')
-        state = ChooseTrumpState(self.__hand, can_chibre=can_chibre)  # todo: allow chibre
+        state = ChooseTrumpState(self.__hand.cards, can_chibre=can_chibre)  # todo: allow chibre
         return self.__agent.choose_trump(state).suit
 
     def reward(self, value: int) -> None:

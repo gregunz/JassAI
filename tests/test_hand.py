@@ -27,7 +27,7 @@ class HandTest(TestCase):
 
     def test_hands(self):
         n_cards = 0
-        for hand in Deck.give_hands():
+        for hand in Deck().shuffle().give_hands():
             self.assertIsInstance(hand, Hand)
             n_cards += len(hand.cards)
         self.assertEqual(n_cards, 36)

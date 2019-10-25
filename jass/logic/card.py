@@ -1,32 +1,38 @@
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, unique, EnumMeta
 from typing import Union
 
 from werkzeug.utils import cached_property
 
 
-class Suit(Enum):
+class _IndexEnumMeta(EnumMeta):
+    def __getitem__(cls, item: int):
+        return list(cls)[item]
+
+
+@unique
+class Suit(Enum, metaclass=_IndexEnumMeta):
     diamonds = '♢'
     spades = '♠'
     hearts = '♡'
     clubs = '♣'
 
     @cached_property
-    def _order_value(self) -> int:
-        return {
-            Suit.diamonds: 0,
-            Suit.spades: 1,
-            Suit.hearts: 2,
-            Suit.clubs: 3,
-        }[self]
+    def order_value(self) -> int:
+        return {suit: i for i, suit in enumerate(Suit)}[self]
+
+    @classmethod
+    def __getitem__(cls, item: int) -> 'Suit':
+        return list(Suit)[item]
 
     def __repr__(self):
-        return str(self.value)
+        return f'Suit({self})'
 
     def __str__(self):
-        return self.__repr__()
+        return str(self.value)
 
 
-class Rank(IntEnum):
+@unique
+class Rank(IntEnum, metaclass=_IndexEnumMeta):
     six = 6
     seven = 7
     eight = 8
@@ -38,8 +44,8 @@ class Rank(IntEnum):
     ace = 14
 
     @cached_property
-    def _order_value(self) -> int:
-        return self.value - self.six + 1
+    def order_value(self) -> int:
+        return {rank: i for i, rank in enumerate(Rank)}[self]
 
     @cached_property
     def _trump_order_value(self) -> int:
@@ -50,9 +56,16 @@ class Rank(IntEnum):
             Rank.king: Rank.jack,
             Rank.queen: Rank.ten,
             Rank.ten: Rank.nine,
-        }.get(self, self)._order_value
+        }.get(self, self).order_value
 
-    def __repr__(self) -> str:
+    @classmethod
+    def __getitem__(cls, item: int) -> 'Rank':
+        return list(Rank)[item]
+
+    def __repr__(self):
+        return f'Rank({self})'
+
+    def __str__(self):
         return {
             Rank.jack: 'J',
             Rank.queen: 'Q',
@@ -60,24 +73,35 @@ class Rank(IntEnum):
             Rank.ace: 'A',
         }.get(self, str(self.value))
 
-    def __str__(self):
-        return self.__repr__()
+
+class _MetaCard(type):
+
+    def __getitem__(cls, item: int):
+        rank_value = item % len(Rank)
+        suit_value = item // len(Rank)
+        return Card(rank=Rank[rank_value], suit=Suit[suit_value])
+
+    def __iter__(cls):
+        for i in range(len(cls)):
+            yield Card[i]
+
+    def __len__(cls):
+        return len(Suit) * len(Rank)
 
 
-class Card:
+class Card(object, metaclass=_MetaCard):
     def __init__(self, rank: Union[int, str, Rank], suit: Union[str, Suit]):
-        try:
-            rank = int(rank)
-        except ValueError:
-            pass
 
         if isinstance(rank, str):
-            rank = {
-                'J': Rank.jack,
-                'Q': Rank.queen,
-                'K': Rank.king,
-                'A': Rank.ace,
-            }.get(rank.upper(), rank)
+            try:
+                rank = int(rank)
+            except ValueError:
+                rank = {
+                    'J': Rank.jack,
+                    'Q': Rank.queen,
+                    'K': Rank.king,
+                    'A': Rank.ace,
+                }.get(rank.upper(), rank)
 
         if isinstance(suit, str):
             suit = {
@@ -118,36 +142,35 @@ class Card:
 
     def __strength_value(self, served: Suit, trump: Suit) -> int:
         if self.suit is trump:
-            return self.rank._trump_order_value + Rank.ace._order_value
+            return self.rank._trump_order_value + Rank.ace.order_value + 2
         if self.suit is served:
-            return self.rank._order_value
+            return self.rank.order_value + 1
         return 0
 
     @cached_property
-    def __order_value(self) -> int:
-        # use 10 instead of 9 such that ace and 6 are separated by 2 when searching for sequences
-        return self.rank._order_value + self.suit._order_value * 10
+    def order_value(self) -> int:
+        return self.rank.order_value + self.suit.order_value * len(Rank)
 
     def __repr__(self) -> str:
-        return repr(self.rank) + repr(self.suit)
+        return f'Card({self.rank}{self.suit})'
+
+    def __str__(self):
+        return str(self.rank) + str(self.suit)
 
     def __eq__(self, other: 'Card') -> bool:
-        return self.__order_value == other.__order_value
+        return self.order_value == other.order_value
 
     def __lt__(self, other: 'Card') -> bool:
-        return self.__order_value < other.__order_value
+        return self.order_value < other.order_value
 
     def __gt__(self, other: 'Card') -> bool:
         return other.__lt__(self)
 
     def __le__(self, other: 'Card') -> bool:
-        return self.__order_value <= other.__order_value
+        return self.order_value <= other.order_value
 
     def __ge__(self, other: 'Card') -> bool:
         return other.__le__(self)
 
     def __hash__(self) -> int:
         return hash((self.rank, self.suit))
-
-    def __str__(self):
-        return self.__repr__()

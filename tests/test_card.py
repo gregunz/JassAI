@@ -14,11 +14,12 @@ class CardTest(TestCase):
         ranks = list(Rank)
         return ranks[randint(0, len(ranks) - 1)]
 
-    def test_card_repr(self):
-        self.assertEqual(repr(Card(6, Suit.spades)), '6♠')
-        self.assertEqual(repr(Card(Rank.ace, Suit.clubs)), 'A♣')
-        self.assertEqual(repr(Card(10, Suit.diamonds)), '10♢')
-        self.assertEqual(repr(Card(11, Suit.hearts)), 'J♡')
+    def test_card_str(self):
+        self.assertEqual(str(Card(6, Suit.spades)), '6♠')
+        self.assertEqual(str(Card(Rank.ace, Suit.clubs)), 'A♣')
+        self.assertEqual(str(Card(10, Suit.diamonds)), '10♢')
+        self.assertEqual(str(Card(11, Suit.hearts)), 'J♡')
+        self.assertEqual(str(Card('q', 'h')), 'Q♡')
 
     def test_ranks(self):
         for i in range(Rank.six, Rank.ace):

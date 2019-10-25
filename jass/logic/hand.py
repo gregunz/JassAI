@@ -80,5 +80,8 @@ class Hand:
     def __can_serve(self, suit: Suit, including_jack=True) -> bool:
         return suit in {card.suit for card in self.__cards if including_jack or card.rank is not Rank.jack}
 
+    def __str__(self):
+        return f'[{" ".join([str(c) for c in sorted(self.cards)])}]'
+
     def __repr__(self):
-        return f'Hand: {sorted(self.cards)}'
+        return f'Hand(cards={self})'

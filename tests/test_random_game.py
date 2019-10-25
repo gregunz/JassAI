@@ -7,12 +7,12 @@ from jass.logic.game import Game
 class RandomGameTest(TestCase):
 
     def test_scores(self):
-        humans = [RandomAgent() for _ in range(4)]
+        random_agents = [RandomAgent() for _ in range(4)]
         names = ['Jean', 'Anne', 'Luc', 'Sophie']
 
         for _ in range(10):
-            game = Game(names, humans, log_fn=lambda x: None)
-            game.start()
+            game = Game(names, random_agents)
+            game.play()
 
             team1, team2 = game.teams
 
