@@ -144,10 +144,10 @@ class Card(object, metaclass=_MetaCard):
         return self.rank.order_value + self.suit.order_value * len(Rank)
 
     def __repr__(self) -> str:
-        return f'Card({self.rank}{self.suit})'
+        return f'Card({str(self.rank)}{str(self.suit)})'
 
     def __str__(self):
-        return str(self.rank) + str(self.suit)
+        return f'{str(self.rank)}{str(self.suit)}'
 
     def __eq__(self, other: 'Card') -> bool:
         return self.order_value == other.order_value
