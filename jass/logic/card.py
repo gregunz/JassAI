@@ -20,10 +20,6 @@ class Suit(Enum, metaclass=_IndexEnumMeta):
     def order_value(self) -> int:
         return {suit: i for i, suit in enumerate(Suit)}[self]
 
-    @classmethod
-    def __getitem__(cls, item: int) -> 'Suit':
-        return list(Suit)[item]
-
     def __repr__(self):
         return f'Suit({self})'
 
@@ -57,10 +53,6 @@ class Rank(IntEnum, metaclass=_IndexEnumMeta):
             Rank.queen: Rank.ten,
             Rank.ten: Rank.nine,
         }.get(self, self).order_value
-
-    @classmethod
-    def __getitem__(cls, item: int) -> 'Rank':
-        return list(Rank)[item]
 
     def __repr__(self):
         return f'Rank({self})'
