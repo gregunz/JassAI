@@ -13,7 +13,7 @@ class StatesTest(TestCase):
         for _ in range(100):
             cards = deck.shuffle().cards()
 
-            num_cards_hand = random.randint(1, 9)
+            num_cards_hand = random.randint(2, 9)
             num_card_on_table = random.randint(0, 3)
             round_idx = num_cards_hand + num_card_on_table
 
@@ -25,7 +25,7 @@ class StatesTest(TestCase):
                 trick_history=cards[num_cards_hand:num_cards_hand + num_card_on_table],
                 round_history=[cards[round_idx + i * 4:round_idx + (i + 1) * 4] for i in range(9 - num_cards_hand)],
             )
-            self.assertEqual(state.to_tensor().nelement(), state.tensor_size)
+            self.assertEqual(state.tensor.nelement(), state.tensor_size)
 
     def test_random_choose_trump_state(self):
         deck = Deck()
@@ -35,4 +35,4 @@ class StatesTest(TestCase):
                 hand=cards[:9],
                 can_chibre=random.random() < 0.5,
             )
-            self.assertEqual(state.to_tensor().nelement(), state.tensor_size)
+            self.assertEqual(state.tensor.nelement(), state.tensor_size)

@@ -13,6 +13,10 @@ class Player:
         self.__agent: Agent = agent
         self.__hand: Hand = None
 
+    @property
+    def hand_cards(self) -> List[Card]:
+        return self.__hand.cards
+
     def give(self, hand: Hand) -> None:
         self.__hand = hand
 
@@ -42,8 +46,8 @@ class Player:
         state = ChooseTrumpState(self.__hand.cards, can_chibre=can_chibre)  # todo: allow chibre
         return self.__agent.choose_trump(state).suit
 
-    def reward(self, value: int) -> None:
-        pass
+    def reward(self, points: int, is_last_trick: bool) -> None:
+        self.__agent.trick_end(reward=points, done=is_last_trick)
 
     def has_7_diamonds(self) -> bool:
         return self.__hand.has(Card(7, Suit.diamonds))

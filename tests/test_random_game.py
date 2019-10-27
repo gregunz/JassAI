@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from jass.agents.random_agent import RandomAgent
+from jass.agents.impl.random_agent import RandomAgent
 from jass.logic.game import Game
 
 
@@ -8,11 +8,10 @@ class RandomGameTest(TestCase):
 
     def test_scores(self):
         random_agents = [RandomAgent() for _ in range(4)]
-        names = ['Jean', 'Anne', 'Luc', 'Sophie']
 
         for _ in range(10):
-            game = Game(names, random_agents)
-            game.play()
+            game = Game(random_agents)
+            game.start()
 
             team1, team2 = game.teams
 

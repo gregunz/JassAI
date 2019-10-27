@@ -13,5 +13,8 @@ class Agent(metaclass=ABCMeta):
     def choose_trump(self, state: ChooseTrumpState) -> ChooseTrumpAction:
         raise NotImplementedError
 
+    def trick_end(self, reward: int, done: bool):
+        pass
+
     def __repr__(self):
         return self.__class__.__name__

@@ -16,8 +16,10 @@ class Hand:
         return list(self.__cards)
 
     def play(self, card: Card, cards_played: List[Card], trump: Suit) -> None:
-        if card not in self.playable_cards(cards_played=cards_played, trump=trump):
-            raise IllegalMoveError(f'Cannot play this card ({card})')
+        playable_cards = self.playable_cards(cards_played=cards_played, trump=trump)
+        if card not in playable_cards:
+            raise IllegalMoveError(f'Cannot play {card} when cards played are {cards_played}, trump is {trump}'
+                                   f', hand is {self} and playable cards are {playable_cards}')
         self.__cards.remove(card)
         # return self
 
