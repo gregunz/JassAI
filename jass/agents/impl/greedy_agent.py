@@ -9,6 +9,7 @@ class GreedyAgent(Agent):
     @classmethod
     def play_card(cls, state: PlayCardState) -> PlayCardAction:
         # todo: be greedier than random
+        # for example: if I have a better card than what's on the table play it otherwise the lowest
         return RandomAgent.play_card(state)
 
     @classmethod
